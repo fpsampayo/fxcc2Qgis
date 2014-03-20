@@ -1,0 +1,4 @@
+*.pyc
+README.html
+README.txt
+plugin_upload.py
