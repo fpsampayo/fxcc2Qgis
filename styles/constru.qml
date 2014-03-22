@@ -63,11 +63,11 @@
     <property key="labeling/displayAll" value="false"/>
     <property key="labeling/dist" value="0"/>
     <property key="labeling/distInMapUnits" value="false"/>
-    <property key="labeling/enabled" value="false"/>
-    <property key="labeling/fieldName" value=""/>
+    <property key="labeling/enabled" value="true"/>
+    <property key="labeling/fieldName" value="altura"/>
     <property key="labeling/fontBold" value="false"/>
     <property key="labeling/fontCapitals" value="0"/>
-    <property key="labeling/fontFamily" value="MS Shell Dlg 2"/>
+    <property key="labeling/fontFamily" value="Cantarell"/>
     <property key="labeling/fontItalic" value="false"/>
     <property key="labeling/fontLetterSpacing" value="0"/>
     <property key="labeling/fontLimitPixelSize" value="false"/>
@@ -81,7 +81,7 @@
     <property key="labeling/fontWordSpacing" value="0"/>
     <property key="labeling/formatNumbers" value="false"/>
     <property key="labeling/isExpression" value="false"/>
-    <property key="labeling/labelOffsetInMapUnits" value="true"/>
+    <property key="labeling/labelOffsetInMapUnits" value="false"/>
     <property key="labeling/labelPerPart" value="false"/>
     <property key="labeling/leftDirectionSymbol" value="&lt;"/>
     <property key="labeling/limitNumLabels" value="false"/>
@@ -92,10 +92,10 @@
     <property key="labeling/minFeatureSize" value="0"/>
     <property key="labeling/multilineAlign" value="0"/>
     <property key="labeling/multilineHeight" value="1"/>
-    <property key="labeling/namedStyle" value="Normal"/>
+    <property key="labeling/namedStyle" value="Regular"/>
     <property key="labeling/obstacle" value="true"/>
     <property key="labeling/placeDirectionSymbol" value="0"/>
-    <property key="labeling/placement" value="0"/>
+    <property key="labeling/placement" value="1"/>
     <property key="labeling/placementFlags" value="0"/>
     <property key="labeling/plussign" value="false"/>
     <property key="labeling/preserveRotation" value="true"/>
@@ -186,8 +186,17 @@
     <selectedonly on=""/>
   </labelattributes>
   <edittypes>
+    <edittype labelontop="0" editable="1" type="0" name="altura"/>
+    <edittype labelontop="0" editable="1" type="0" name="anio_exp"/>
+    <edittype labelontop="0" editable="1" type="0" name="cod_via"/>
+    <edittype labelontop="0" editable="1" type="0" name="dup"/>
+    <edittype labelontop="0" editable="1" type="0" name="entidad_exp"/>
+    <edittype labelontop="0" editable="1" type="0" name="nombre_via"/>
+    <edittype labelontop="0" editable="1" type="0" name="num"/>
+    <edittype labelontop="0" editable="1" type="0" name="num_exp"/>
     <edittype labelontop="0" editable="1" type="0" name="refcat"/>
     <edittype labelontop="0" editable="1" type="0" name="rotulo"/>
+    <edittype labelontop="0" editable="1" type="0" name="sg_via"/>
   </edittypes>
   <editform></editform>
   <editforminit></editforminit>

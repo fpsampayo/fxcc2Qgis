@@ -30,10 +30,8 @@ import resources_rc
 from fxcc2qgisdialog import fxcc2QgisDialog
 import os.path
 
-
-import codecs
-
-
+from shapely.wkt import dumps, loads
+from shapely.ops import polygonize
 
 try:
 	from osgeo import ogr
@@ -131,31 +129,111 @@ class fxcc2Qgis:
             except:
                 print u"Se encontró algún error generando la parcela " + parcela
 
-        ml.updateExtents()
+        #ml.updateExtents()
         ml.loadNamedStyle(self.plugin_dir + '/styles/parcela.qml')
 
         QgsMapLayerRegistry.instance().addMapLayer(ml)
 
 
-    def generaCapaConstruccion(self):
+    def generaCapaConstru(self, dxfs_constru):
 
         #Creamos la capa de memoria
         ml = QgsVectorLayer("Polygon", "CONTRUCCION", "memory")
         pr = ml.dataProvider()
         #Creamos los campos de la capa
         pr.addAttributes( [ QgsField("refcat", QVariant.String) ] )
+        pr.addAttributes( [ QgsField("altura", QVariant.String) ] )
         pr.addAttributes( [ QgsField("cod_via", QVariant.String) ] )
         pr.addAttributes( [ QgsField("sg_via", QVariant.String) ] )
         pr.addAttributes( [ QgsField("nombre_via", QVariant.String) ] )
         pr.addAttributes( [ QgsField("num", QVariant.String) ] )
         pr.addAttributes( [ QgsField("dup", QVariant.String) ] )
-        pr.addAttributes( [ QgsField("altura", QVariant.String) ] )
         pr.addAttributes( [ QgsField("anio_exp", QVariant.String) ] )
         pr.addAttributes( [ QgsField("num_exp", QVariant.String) ] )
         pr.addAttributes( [ QgsField("entidad_exp", QVariant.String) ] )
         ml.updateFields()
 
-        pass
+        for parcela in dxfs_constru:
+            featuresExternas = dxfs_constru[parcela][0]
+            featuresInternas = dxfs_constru[parcela][1]
+            featuresCentroide = dxfs_constru[parcela][2]
+            datos_asc = dxfs_constru[parcela][3]
+            atributos = []
+            centroides = []
+            for centroide in featuresCentroide:
+                #obtenemos la altura y el rotulo del estilo de cada centroide
+                for n in centroide.GetStyleString().split(','):
+                    if n.startswith('s'):
+                        altura = float(n.replace('s:', '').replace('g', ''))
+                    elif n.startswith('t'):
+                        rotulo = n.split('"')[1]
+                punto = centroide.GetGeometryRef()
+                x = punto.GetX()
+                y = punto.GetY()
+                longitudRotulo = len(rotulo)
+                factor = 0.15 * (altura * 3.3333)
+                desfaseX = longitudRotulo * factor - 0.05
+                punto.SetPoint(point = 0, x = x + desfaseX, y = y - 0.10)
+
+                centroides.append((rotulo, punto))
+
+            print "1"
+            
+            featuresProceso = featuresExternas + featuresInternas
+
+
+            
+            features = []
+
+            if len(featuresProceso) > 1:
+                print "2"
+                geometry_out = None
+                for inFeature in featuresProceso:
+                    geometry_in = inFeature.GetGeometryRef()
+                    if geometry_out is None:
+                        geometry_out = geometry_in
+                        geometry_out = ogr.ForceToMultiLineString(geometry_out)
+                    else:
+                        geometry_out = geometry_out.Union(geometry_in) 
+
+                lineasInternasShapely = loads(geometry_out.ExportToWkt())
+                polygonsShapely = polygonize(lineasInternasShapely)
+
+                polygonGeom = []
+                for polygon in polygonsShapely:
+                    polygonGeom.append(ogr.CreateGeometryFromWkt(dumps(polygon)))
+
+                for pol in polygonGeom:
+                    for cen in centroides:
+                        if pol.Contains(cen[1]):
+                            geometryPolyWkt = pol.ExportToWkt()
+                            fet = QgsFeature()
+                            fet.setGeometry(QgsGeometry.fromWkt(geometryPolyWkt))
+                            atributos = []
+                            atributos.append(parcela)
+                            atributos.append(cen[0])
+                            atributos.extend(datos_asc)
+                            fet.setAttributes(atributos)
+                            features.append(fet)
+            else:
+                print "3"
+                geometryPoly = ogr.BuildPolygonFromEdges(ogr.ForceToMultiLineString(featuresProceso[0].GetGeometryRef()), dfTolerance = 0)
+                geometryPolyWkt = geometryPoly.ExportToWkt()
+                fet = QgsFeature()
+                fet.setGeometry(QgsGeometry.fromWkt(geometryPolyWkt))
+                atributos.append(parcela)
+                atributos.append(centroides[0][0])
+                atributos.extend(datos_asc)
+                fet.setAttributes(atributos)
+                features.append(fet)
+
+            pr.addFeatures(features)
+
+        #ml.updateExtents()
+        ml.loadNamedStyle(self.plugin_dir + '/styles/constru.qml')
+
+        QgsMapLayerRegistry.instance().addMapLayer(ml)
+
 
 
     def procesaAsc(self, fichero):
@@ -198,7 +276,7 @@ class fxcc2Qgis:
 
             driverIn = ogr.GetDriverByName('DXF')
             dataSource = driverIn.Open(dxf, 0)
-            dataSource.ExecuteSQL("SELECT * FROM entities WHERE Layer = 'PG-LP'")
+            dataSource.ExecuteSQL("SELECT * FROM entities WHERE Layer = 'PG-LP' OR Layer = 'PG-LI' OR Layer = 'PG-AA'")
 
             layerIn = dataSource.GetLayer()
             totalRegistros = layerIn.GetFeatureCount()
@@ -233,14 +311,12 @@ class fxcc2Qgis:
             asc = dxf.replace(".dxf", ".asc")
             datos_asc = self.procesaAsc(asc)
 
-            #Mandamos las features del dxf a la funcion que le toque
-            #self.generaCapaParcela(nombreDxf, featuresExternas, datos_asc)
-            #self.generaCapaConstruccion(featuresInternas)
-
+            #Almacenamos las features de cada dxf
             dxfs_parcela[nombreDxf] = (featuresExternas, datos_asc)
-            #dxfs_constru[nombreDxf] = ()
+            dxfs_constru[nombreDxf] = (featuresExternas, featuresInternas, featuresCentroide, datos_asc)
 
-            
+        #Pasamos todas las features recolectadas a las funciones encargadas de generar las capas
+        self.generaCapaConstru(dxfs_constru)
         self.generaCapaParcela(dxfs_parcela)
 
 
@@ -259,20 +335,14 @@ class fxcc2Qgis:
         self.dlg.show()
         # Run the dialog event loop
         result = self.dlg.exec_()
-        read_path = "." 
-        file = unicode(QFileDialog.getExistingDirectory(self.iface.mainWindow(), "Seleccione con FXCC a importar"))
-        file
-        #file = str(unicode(QFileDialog.getExistingDirectory(self.iface.mainWindow(), "Select con FXCC a importar"), "utf-8"))
-        print "Se selecciona el directorio: " + file
-
-        ficheros = self.buscaDxf(file)
-
-        self.procesaDxf(ficheros)
+        
         #self.prueba()
         # See if OK was pressed
         if result == 1:
             # do something useful (delete the line containing pass and
             # substitute with your code)
-            pass
-			
-	
+            file = unicode(QFileDialog.getExistingDirectory(self.iface.mainWindow(), "Directorio con FXCC a importar"))
+            if file != "":
+                print "Se selecciona el directorio: " + file
+                ficheros = self.buscaDxf(file)
+                self.procesaDxf(ficheros)
