@@ -68,6 +68,7 @@ class fxcc2Qgis:
         # connect the action to the run method
         self.action.triggered.connect(self.run)
 
+
         # Add toolbar button and menu item
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu(u"&fxcc2Qgis", self.action)
@@ -331,17 +332,19 @@ class fxcc2Qgis:
 
     # run method that performs all the real work
     def run(self):
+        
+        QObject.connect(self.dlg.btnSeleccionar, SIGNAL("clicked()"), self.dlg.seleccionaDirectorio)
+        QObject.connect(self.dlg.buttonBox, SIGNAL("accepted()"), self.dlg.validateFields)
+        
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
-        result = self.dlg.exec_()
-        
+        result = self.dlg.exec_()   
+
         #self.prueba()
         # See if OK was pressed
         if result == 1:
-            # do something useful (delete the line containing pass and
-            # substitute with your code)
-            file = unicode(QFileDialog.getExistingDirectory(self.iface.mainWindow(), "Directorio con FXCC a importar"))
+            file = self.dlg.cmpRuta.text()
             if file != "":
                 print "Se selecciona el directorio: " + file
                 ficheros = self.buscaDxf(file)

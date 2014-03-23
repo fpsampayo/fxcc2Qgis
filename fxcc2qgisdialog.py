@@ -22,6 +22,8 @@
 
 from PyQt4 import QtCore, QtGui
 from ui_fxcc2qgis import Ui_fxcc2Qgis
+
+import os
 # create the dialog for zoom to point
 
 
@@ -34,3 +36,21 @@ class fxcc2QgisDialog(QtGui.QDialog, Ui_fxcc2Qgis):
         # http://qt-project.org/doc/qt-4.8/designer-using-a-ui-file.html
         # #widgets-and-dialogs-with-auto-connect
         self.setupUi(self)
+
+    def seleccionaDirectorio(self):
+
+        file = unicode(QtGui.QFileDialog.getExistingDirectory(self, "Directorio con FXCC a importar"))
+        self.cmpRuta.setText(file)
+
+    def validateFields(self):
+
+        msg = ""
+        if self.cmpRuta.text() == '':
+            msg += "No se ha introducido ruta.\n"
+        elif os.path.exists(self.cmpRuta.text()) == False:
+            msg += "La ruta introducida no existe.\n"
+
+        if msg == "":
+            self.accept()
+        else:
+            QtGui.QMessageBox.warning(self, "Aviso", msg)
