@@ -27,7 +27,7 @@ from qgis.core import *
 # Initialize Qt resources from file resources.py
 import resources_rc
 # Import the code for the dialog
-from fxcc2qgisdialog import fxcc2QgisDialog
+from gui.fxcc2qgisdialog import fxcc2QgisDialog
 import os.path
 
 from shapely.wkt import dumps, loads

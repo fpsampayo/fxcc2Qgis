@@ -33,11 +33,11 @@ TRANSLATIONS =
 
 PLUGINNAME = fxcc2qgis
 
-PY_FILES = fxcc2qgis.py fxcc2qgisdialog.py __init__.py
+PY_FILES = fxcc2qgis.py gui/fxcc2qgisdialog.py __init__.py
 
-EXTRAS = icon.png metadata.txt
+EXTRAS = images/icon.png metadata.txt
 
-UI_FILES = ui_fxcc2qgis.py
+UI_FILES = ui/ui_fxcc2qgis.py
 
 RESOURCE_FILES = resources_rc.py
 

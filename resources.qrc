@@ -1,5 +1,5 @@
 <RCC>
-    <qresource prefix="/plugins/fxcc2qgis" >
-        <file>icon.png</file>
+    <qresource prefix="/plugins/fxcc2qgis">
+        <file alias="icon.png">images/icon.png</file>
     </qresource>
 </RCC>

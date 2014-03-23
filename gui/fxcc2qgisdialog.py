@@ -21,7 +21,7 @@
 """
 
 from PyQt4 import QtCore, QtGui
-from ui_fxcc2qgis import Ui_fxcc2Qgis
+from fxcc2Qgis.ui.ui_fxcc2qgis import Ui_fxcc2Qgis
 
 import os
 # create the dialog for zoom to point
