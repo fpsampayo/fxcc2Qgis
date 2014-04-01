@@ -177,8 +177,6 @@ class fxcc2Qgis:
                 punto.SetPoint(point = 0, x = x + desfaseX, y = y - 0.10)
 
                 centroides.append((rotulo, punto))
-
-            print "1"
             
             featuresProceso = featuresExternas + featuresInternas
 
@@ -187,7 +185,6 @@ class fxcc2Qgis:
             features = []
 
             if len(featuresProceso) > 1:
-                print "2"
                 geometry_out = None
                 for inFeature in featuresProceso:
                     geometry_in = inFeature.GetGeometryRef()
@@ -217,7 +214,6 @@ class fxcc2Qgis:
                             fet.setAttributes(atributos)
                             features.append(fet)
             else:
-                print "3"
                 geometryPoly = ogr.BuildPolygonFromEdges(ogr.ForceToMultiLineString(featuresProceso[0].GetGeometryRef()), dfTolerance = 0)
                 geometryPolyWkt = geometryPoly.ExportToWkt()
                 fet = QgsFeature()
@@ -253,7 +249,7 @@ class fxcc2Qgis:
             numExp = lineas[linea_exp + 2].replace("\n", "")
             entExp = lineas[linea_exp + 3].replace("\n", "")
         except:
-            print "El FXCC no tiene expediente asociado."
+            #print "El FXCC no tiene expediente asociado."
             anoExp = "0"
             numExp = "0"
             entExp = "0"
@@ -272,8 +268,8 @@ class fxcc2Qgis:
         #Pasamos a procesar los dxf uno a uno
         for dxf in ficheros:
             nombreDxf = os.path.splitext(os.path.basename(dxf))[0]
-            print "Se selecciona el fichero: " + dxf
-            print "Referencia catastral: " + nombreDxf
+            #print "Se selecciona el fichero: " + unicode(dxf)
+            #print "Referencia catastral: " + nombreDxf
 
             driverIn = ogr.GetDriverByName('DXF')
             dataSource = driverIn.Open(dxf, 0)
@@ -281,10 +277,9 @@ class fxcc2Qgis:
 
             layerIn = dataSource.GetLayer()
             totalRegistros = layerIn.GetFeatureCount()
-            print "Total registros: " + str(totalRegistros)
+            #print "Total registros: " + unicode(totalRegistros)
             layerIn.ResetReading()
             inFeature = layerIn.GetNextFeature()
-            #print "1"
 
             #Recolectamos las features del dxf para poder procesarlas más adelante
             featuresExternas = []
@@ -293,7 +288,6 @@ class fxcc2Qgis:
             outFeature = []
             cnt = 0
             while inFeature:
-                #print "2"
                 nombreCapa = inFeature.GetFieldAsString('Layer')
                 if nombreCapa == 'PG-LP':
                     featuresExternas.append(inFeature)
