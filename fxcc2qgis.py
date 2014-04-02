@@ -73,6 +73,10 @@ class fxcc2Qgis:
         self.iface.addToolBarIcon(self.action)
         self.iface.addPluginToMenu(u"&fxcc2Qgis", self.action)
 
+
+        QObject.connect(self.dlg.btnSeleccionar, SIGNAL("clicked()"), self.dlg.seleccionaDirectorio)
+        QObject.connect(self.dlg.buttonBox, SIGNAL("accepted()"), self.dlg.validateFields)
+
     def unload(self):
         # Remove the plugin menu item and icon
         self.iface.removePluginMenu(u"&fxcc2Qgis", self.action)
@@ -337,10 +341,7 @@ class fxcc2Qgis:
 
     # run method that performs all the real work
     def run(self):
-        
-        QObject.connect(self.dlg.btnSeleccionar, SIGNAL("clicked()"), self.dlg.seleccionaDirectorio)
-        QObject.connect(self.dlg.buttonBox, SIGNAL("accepted()"), self.dlg.validateFields)
-        
+
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
