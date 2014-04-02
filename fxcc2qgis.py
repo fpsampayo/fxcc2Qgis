@@ -98,7 +98,7 @@ class fxcc2Qgis:
 
         for parcela in dxfs_parcela:
             try:
-                print "Generando la capa parcela de la referencia: " + parcela
+                #print "Generando la capa parcela de la referencia: " + parcela
                 featuresExternas = dxfs_parcela[parcela][0]
                 datos_asc = dxfs_parcela[parcela][1]
                 #Procesamos las features del dxf (lineas) y las unimos en una única geometría      
@@ -128,7 +128,8 @@ class fxcc2Qgis:
                 #Añadimos la feature al data provider
                 pr.addFeatures([fet])
             except:
-                print u"Se encontró algún error generando la parcela " + parcela
+                pass
+                #print u"Se encontró algún error generando la parcela " + parcela
 
         #ml.updateExtents()
         ml.loadNamedStyle(self.plugin_dir + '/styles/parcela.qml')
@@ -161,26 +162,16 @@ class fxcc2Qgis:
             datos_asc = dxfs_constru[parcela][3]
             atributos = []
             centroides = []
-            for centroide in featuresCentroide:
-                #obtenemos la altura y el rotulo del estilo de cada centroide
-                for n in centroide.GetStyleString().split(','):
-                    if n.startswith('s'):
-                        altura = float(n.replace('s:', '').replace('g', ''))
-                    elif n.startswith('t'):
-                        rotulo = n.split('"')[1]
-                punto = centroide.GetGeometryRef()
-                x = punto.GetX()
-                y = punto.GetY()
-                longitudRotulo = len(rotulo)
-                factor = 0.15 * (altura * 3.3333)
-                desfaseX = longitudRotulo * factor - 0.05
-                punto.SetPoint(point = 0, x = x + desfaseX, y = y - 0.10)
+            for centroide in featuresCentroide:                
+                punto = ogr.Geometry(type = 1)
+                rotulo = centroide[0]
+                x = centroide[1]
+                y = centroide[2]
+                punto.SetPoint(point = 0, x = float(x), y = float(y))
 
                 centroides.append((rotulo, punto))
             
             featuresProceso = featuresExternas + featuresInternas
-
-
             
             features = []
 
@@ -273,7 +264,7 @@ class fxcc2Qgis:
 
             driverIn = ogr.GetDriverByName('DXF')
             dataSource = driverIn.Open(dxf, 0)
-            dataSource.ExecuteSQL("SELECT * FROM entities WHERE Layer = 'PG-LP' OR Layer = 'PG-LI' OR Layer = 'PG-AA'")
+            dataSource.ExecuteSQL("SELECT * FROM entities WHERE Layer = 'PG-LP' OR Layer = 'PG-LI'")
 
             layerIn = dataSource.GetLayer()
             totalRegistros = layerIn.GetFeatureCount()
@@ -284,7 +275,6 @@ class fxcc2Qgis:
             #Recolectamos las features del dxf para poder procesarlas más adelante
             featuresExternas = []
             featuresInternas = []
-            featuresCentroide = []
             outFeature = []
             cnt = 0
             while inFeature:
@@ -293,14 +283,35 @@ class fxcc2Qgis:
                     featuresExternas.append(inFeature)
                 elif nombreCapa == 'PG-LI':
                     featuresInternas.append(inFeature)
-                elif nombreCapa == 'PG-AA':
-                    featuresCentroide.append(inFeature)
                 
                 cnt = cnt + 1
                 if cnt < totalRegistros: 
                     inFeature = layerIn.GetNextFeature()
                 else:
                     break
+
+            #Hacemos segunda pasada para recuperar los textos de rotulo del dxf a pelo
+            inFile = open(dxf)
+            lineas = inFile.readlines()
+            inFile.close()
+            centroides = []
+            index = 0
+            for line in lineas:
+                line = line.replace("\n", "")
+                if line == 'TEXT':
+                    if lineas[index + 2].replace("\n", "") == 'PG-AA':
+                        for l in range(30):
+                            linea = lineas[index + l].replace("\n", "")
+                            if linea == '   1':
+                                rotulo = lineas[index + l + 1].replace("\n", "")
+                            if linea == '  11':
+                                coordx = lineas[index + l + 1].replace("\n", "")
+                            if linea == '  21':
+                                coordy = lineas[index + l + 1].replace("\n", "")
+                                break
+                        centroides.append([rotulo, coordx, coordy])
+                        #print rotulo + "[" + coordx + ", " + coordy + "]"
+                index += 1
             
             #Procesamos el fichero alfanumérico
             asc = dxf.replace(".dxf", ".asc")
@@ -308,7 +319,7 @@ class fxcc2Qgis:
 
             #Almacenamos las features de cada dxf
             dxfs_parcela[nombreDxf] = (featuresExternas, datos_asc)
-            dxfs_constru[nombreDxf] = (featuresExternas, featuresInternas, featuresCentroide, datos_asc)
+            dxfs_constru[nombreDxf] = (featuresExternas, featuresInternas, centroides, datos_asc)
 
         #Pasamos todas las features recolectadas a las funciones encargadas de generar las capas
         self.generaCapaConstru(dxfs_constru)
@@ -340,6 +351,6 @@ class fxcc2Qgis:
         if result == 1:
             file = self.dlg.cmpRuta.text()
             if file != "":
-                print "Se selecciona el directorio: " + file
+                #print "Se selecciona el directorio: " + unicode(file)
                 ficheros = self.buscaDxf(file)
                 self.procesaDxf(ficheros)
