@@ -138,7 +138,7 @@ class fxcc2Qgis:
 
         #ml.updateExtents()
         ml.loadNamedStyle(self.plugin_dir + '/styles/parcela.qml')
-        ml.setCrs(QgsCoordinateReferenceSystem('EPSG:25829'))
+        ml.setCrs(QgsCoordinateReferenceSystem(self.dlg.cmpCrs.text()))
 
         QgsMapLayerRegistry.instance().addMapLayer(ml)
 
@@ -225,7 +225,7 @@ class fxcc2Qgis:
 
         #ml.updateExtents()
         ml.loadNamedStyle(self.plugin_dir + '/styles/constru.qml')
-        ml.setCrs(QgsCoordinateReferenceSystem('EPSG:25829'))
+        ml.setCrs(QgsCoordinateReferenceSystem(self.dlg.cmpCrs.text()))
 
         QgsMapLayerRegistry.instance().addMapLayer(ml)
 
