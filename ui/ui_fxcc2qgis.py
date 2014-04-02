@@ -2,8 +2,8 @@
 
 # Form implementation generated from reading ui file 'ui_fxcc2qgis.ui'
 #
-# Created: Sun Mar 23 00:30:56 2014
-#      by: PyQt4 UI code generator 4.10.3
+# Created: Wed Apr 02 15:52:14 2014
+#      by: PyQt4 UI code generator 4.10.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -38,16 +38,33 @@ class Ui_fxcc2Qgis(object):
         self.label.setWordWrap(True)
         self.label.setObjectName(_fromUtf8("label"))
         self.label_2 = QtGui.QLabel(fxcc2Qgis)
-        self.label_2.setGeometry(QtCore.QRect(20, 70, 361, 31))
+        self.label_2.setGeometry(QtCore.QRect(20, 58, 361, 31))
         self.label_2.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
         self.label_2.setWordWrap(True)
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.cmpRuta = QtGui.QLineEdit(fxcc2Qgis)
-        self.cmpRuta.setGeometry(QtCore.QRect(20, 120, 251, 34))
+        self.cmpRuta.setGeometry(QtCore.QRect(50, 90, 251, 25))
         self.cmpRuta.setObjectName(_fromUtf8("cmpRuta"))
-        self.btnSeleccionar = QtGui.QPushButton(fxcc2Qgis)
-        self.btnSeleccionar.setGeometry(QtCore.QRect(280, 120, 101, 32))
-        self.btnSeleccionar.setObjectName(_fromUtf8("btnSeleccionar"))
+        self.btnSeleccionarRuta = QtGui.QPushButton(fxcc2Qgis)
+        self.btnSeleccionarRuta.setGeometry(QtCore.QRect(310, 90, 71, 25))
+        self.btnSeleccionarRuta.setObjectName(_fromUtf8("btnSeleccionarRuta"))
+        self.cmpCrs = QtGui.QLineEdit(fxcc2Qgis)
+        self.cmpCrs.setEnabled(False)
+        self.cmpCrs.setGeometry(QtCore.QRect(50, 130, 251, 25))
+        self.cmpCrs.setObjectName(_fromUtf8("cmpCrs"))
+        self.btnSeleccionarCrs = QtGui.QPushButton(fxcc2Qgis)
+        self.btnSeleccionarCrs.setGeometry(QtCore.QRect(310, 130, 71, 25))
+        self.btnSeleccionarCrs.setObjectName(_fromUtf8("btnSeleccionarCrs"))
+        self.label_3 = QtGui.QLabel(fxcc2Qgis)
+        self.label_3.setGeometry(QtCore.QRect(20, 95, 41, 16))
+        self.label_3.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.label_3.setWordWrap(True)
+        self.label_3.setObjectName(_fromUtf8("label_3"))
+        self.label_4 = QtGui.QLabel(fxcc2Qgis)
+        self.label_4.setGeometry(QtCore.QRect(20, 135, 41, 16))
+        self.label_4.setAlignment(QtCore.Qt.AlignLeading|QtCore.Qt.AlignLeft|QtCore.Qt.AlignTop)
+        self.label_4.setWordWrap(True)
+        self.label_4.setObjectName(_fromUtf8("label_4"))
 
         self.retranslateUi(fxcc2Qgis)
         QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL(_fromUtf8("rejected()")), fxcc2Qgis.reject)
@@ -56,6 +73,9 @@ class Ui_fxcc2Qgis(object):
     def retranslateUi(self, fxcc2Qgis):
         fxcc2Qgis.setWindowTitle(_translate("fxcc2Qgis", "fxcc2Qgis", None))
         self.label.setText(_translate("fxcc2Qgis", "Con este plugin se puede procesar ficheros de intercambio FXCC de Catastro.", None))
-        self.label_2.setText(_translate("fxcc2Qgis", "Seleccione el directorio con FXCC a importar:", None))
-        self.btnSeleccionar.setText(_translate("fxcc2Qgis", "Seleccionar", None))
+        self.label_2.setText(_translate("fxcc2Qgis", "Seleccione el directorio con FXCC a importar y el sistema de coordenadas:", None))
+        self.btnSeleccionarRuta.setText(_translate("fxcc2Qgis", "...", None))
+        self.btnSeleccionarCrs.setText(_translate("fxcc2Qgis", "...", None))
+        self.label_3.setText(_translate("fxcc2Qgis", "Ruta:", None))
+        self.label_4.setText(_translate("fxcc2Qgis", "CRS:", None))
 

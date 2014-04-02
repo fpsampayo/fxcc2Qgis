@@ -22,6 +22,7 @@
 
 from PyQt4 import QtCore, QtGui
 from fxcc2Qgis.ui.ui_fxcc2qgis import Ui_fxcc2Qgis
+from qgis.gui import *
 
 import os
 # create the dialog for zoom to point
@@ -41,6 +42,14 @@ class fxcc2QgisDialog(QtGui.QDialog, Ui_fxcc2Qgis):
 
         file = unicode(QtGui.QFileDialog.getExistingDirectory(self, "Directorio con FXCC a importar"))
         self.cmpRuta.setText(file)
+
+    def seleccionaCrs(self):
+
+        selector = QgsGenericProjectionSelector(self)
+        selector.setSelectedAuthId('EPSG:25829')
+        if selector.exec_():
+            epsg = selector.selectedAuthId()
+            self.cmpCrs.setText(epsg)
 
     def validateFields(self):
 

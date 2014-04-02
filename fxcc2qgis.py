@@ -74,7 +74,8 @@ class fxcc2Qgis:
         self.iface.addPluginToMenu(u"&fxcc2Qgis", self.action)
 
 
-        QObject.connect(self.dlg.btnSeleccionar, SIGNAL("clicked()"), self.dlg.seleccionaDirectorio)
+        QObject.connect(self.dlg.btnSeleccionarRuta, SIGNAL("clicked()"), self.dlg.seleccionaDirectorio)
+        QObject.connect(self.dlg.btnSeleccionarCrs, SIGNAL("clicked()"), self.dlg.seleccionaCrs)
         QObject.connect(self.dlg.buttonBox, SIGNAL("accepted()"), self.dlg.validateFields)
 
     def unload(self):
@@ -137,6 +138,7 @@ class fxcc2Qgis:
 
         #ml.updateExtents()
         ml.loadNamedStyle(self.plugin_dir + '/styles/parcela.qml')
+        ml.setCrs(QgsCoordinateReferenceSystem('EPSG:25829'))
 
         QgsMapLayerRegistry.instance().addMapLayer(ml)
 
@@ -223,6 +225,7 @@ class fxcc2Qgis:
 
         #ml.updateExtents()
         ml.loadNamedStyle(self.plugin_dir + '/styles/constru.qml')
+        ml.setCrs(QgsCoordinateReferenceSystem('EPSG:25829'))
 
         QgsMapLayerRegistry.instance().addMapLayer(ml)
 
