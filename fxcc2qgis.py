@@ -136,11 +136,11 @@ class fxcc2Qgis:
                 pass
                 #print u"Se encontró algún error generando la parcela " + parcela
 
-        #ml.updateExtents()
         ml.loadNamedStyle(self.plugin_dir + '/styles/parcela.qml')
         ml.setCrs(QgsCoordinateReferenceSystem(self.dlg.cmpCrs.text()))
 
         QgsMapLayerRegistry.instance().addMapLayer(ml)
+        ml.updateExtents()
 
 
     def generaCapaConstru(self, dxfs_constru):
@@ -223,12 +223,11 @@ class fxcc2Qgis:
 
             pr.addFeatures(features)
 
-        #ml.updateExtents()
         ml.loadNamedStyle(self.plugin_dir + '/styles/constru.qml')
         ml.setCrs(QgsCoordinateReferenceSystem(self.dlg.cmpCrs.text()))
 
         QgsMapLayerRegistry.instance().addMapLayer(ml)
-
+        ml.updateExtents()
 
 
     def procesaAsc(self, fichero):
@@ -304,17 +303,17 @@ class fxcc2Qgis:
             centroides = []
             index = 0
             for line in lineas:
-                line = line.replace("\n", "")
+                line = line.replace("\n", "").replace("\r", "")
                 if line == 'TEXT':
-                    if lineas[index + 2].replace("\n", "") == 'PG-AA':
+                    if lineas[index + 2].replace("\n", "").replace("\r", "") == 'PG-AA':
                         for l in range(30):
-                            linea = lineas[index + l].replace("\n", "")
+                            linea = lineas[index + l].replace("\n", "").replace("\r", "")
                             if linea == '   1':
-                                rotulo = lineas[index + l + 1].replace("\n", "")
+                                rotulo = lineas[index + l + 1].replace("\n", "").replace("\r", "")
                             if linea == '  11':
-                                coordx = lineas[index + l + 1].replace("\n", "")
+                                coordx = lineas[index + l + 1].replace("\n", "").replace("\r", "")
                             if linea == '  21':
-                                coordy = lineas[index + l + 1].replace("\n", "")
+                                coordy = lineas[index + l + 1].replace("\n", "").replace("\r", "")
                                 break
                         centroides.append([rotulo, coordx, coordy])
                         #print rotulo + "[" + coordx + ", " + coordy + "]"
@@ -358,3 +357,4 @@ class fxcc2Qgis:
                 #print "Se selecciona el directorio: " + unicode(file)
                 ficheros = self.buscaDxf(file)
                 self.procesaDxf(ficheros)
+                self.iface.zoomFull()
