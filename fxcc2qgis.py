@@ -235,19 +235,20 @@ class fxcc2Qgis:
 
     def procesaAsc(self, fichero):
 
-        infile = open(fichero, 'r')
-        lineas = infile.readlines()
-        cod_via = lineas[4].replace("\n", "")
-        sg_via = lineas[5].replace("\n", "")
-        nombre_via = lineas[6].replace("\n", "")
-        num = lineas[7].replace("\n", "")
-        dup = lineas[8].replace("\n", "")
+        inFile = open(fichero, 'r')
+        lineas = inFile.read().splitlines()
+        inFile.close()
+        cod_via = lineas[4]
+        sg_via = lineas[5]
+        nombre_via = lineas[6]
+        num = lineas[7]
+        dup = lineas[8]
 
         try:
-            linea_exp = lineas.index("EXPEDIENTE\n")
-            anoExp = lineas[linea_exp + 1].replace("\n", "")
-            numExp = lineas[linea_exp + 2].replace("\n", "")
-            entExp = lineas[linea_exp + 3].replace("\n", "")
+            linea_exp = lineas.index("EXPEDIENTE")
+            anoExp = lineas[linea_exp + 1]
+            numExp = lineas[linea_exp + 2]
+            entExp = lineas[linea_exp + 3]
         except:
             #print "El FXCC no tiene expediente asociado."
             anoExp = "0"
@@ -256,7 +257,7 @@ class fxcc2Qgis:
 
         return [cod_via, sg_via, nombre_via, num, dup, anoExp, numExp, entExp]
 
-        infile.close()
+        inFile.close()
 
 
     def procesaDxf(self, ficheros):
@@ -301,22 +302,22 @@ class fxcc2Qgis:
 
             #Hacemos segunda pasada para recuperar los textos de rotulo del dxf a pelo
             inFile = open(dxf)
-            lineas = inFile.readlines()
+            lineas = inFile.read().splitlines()
             inFile.close()
             centroides = []
             index = 0
             for line in lineas:
-                line = line.replace("\n", "").replace("\r", "")
+                line = line
                 if line == 'TEXT':
-                    if lineas[index + 2].replace("\n", "").replace("\r", "") == 'PG-AA':
+                    if lineas[index + 2] == 'PG-AA':
                         for l in range(30):
-                            linea = lineas[index + l].replace("\n", "").replace("\r", "")
+                            linea = lineas[index + l]
                             if linea == '   1':
-                                rotulo = lineas[index + l + 1].replace("\n", "").replace("\r", "")
+                                rotulo = lineas[index + l + 1]
                             if linea == '  11':
-                                coordx = lineas[index + l + 1].replace("\n", "").replace("\r", "")
+                                coordx = lineas[index + l + 1]
                             if linea == '  21':
-                                coordy = lineas[index + l + 1].replace("\n", "").replace("\r", "")
+                                coordy = lineas[index + l + 1]
                                 break
                         centroides.append([rotulo, coordx, coordy])
                         #print rotulo + "[" + coordx + ", " + coordy + "]"
