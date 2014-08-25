@@ -30,8 +30,11 @@ import resources_rc
 from gui.fxcc2qgisdialog import fxcc2QgisDialog
 import os.path
 
-from shapely.wkt import dumps, loads
-from shapely.ops import polygonize
+try:
+    from shapely.wkt import dumps, loads
+    from shapely.ops import polygonize
+except:
+    print "Este plugin necesita el módulo Shapely para poder funcionar."
 
 try:
 	from osgeo import ogr
@@ -106,7 +109,7 @@ class fxcc2Qgis:
                 #print "Generando la capa parcela de la referencia: " + parcela
                 featuresExternas = dxfs_parcela[parcela][0]
                 datos_asc = dxfs_parcela[parcela][1]
-                #Procesamos las features del dxf (lineas) y las unimos en una única geometría      
+                #Procesamos las features del dxf (lineas) y las unimos en una única geometría
                 geometry_out = None
                 for feature in featuresExternas:
                     geometry_in = feature.GetGeometryRef()
@@ -129,7 +132,7 @@ class fxcc2Qgis:
                 fet = QgsFeature()
                 fet.setGeometry(QgsGeometry.fromWkt(geometryPolyWkt))
                 fet.setAttributes(atributos)
-                
+
                 #Añadimos la feature al data provider
                 pr.addFeatures([fet])
             except:
@@ -168,7 +171,7 @@ class fxcc2Qgis:
             datos_asc = dxfs_constru[parcela][3]
             atributos = []
             centroides = []
-            for centroide in featuresCentroide:                
+            for centroide in featuresCentroide:
                 punto = ogr.Geometry(type = 1)
                 rotulo = centroide[0]
                 x = centroide[1]
@@ -176,9 +179,9 @@ class fxcc2Qgis:
                 punto.SetPoint(point = 0, x = float(x), y = float(y))
 
                 centroides.append((rotulo, punto))
-            
+
             featuresProceso = featuresExternas + featuresInternas
-            
+
             features = []
 
             if len(featuresProceso) > 1:
@@ -189,7 +192,7 @@ class fxcc2Qgis:
                         geometry_out = geometry_in
                         geometry_out = ogr.ForceToMultiLineString(geometry_out)
                     else:
-                        geometry_out = geometry_out.Union(geometry_in) 
+                        geometry_out = geometry_out.Union(geometry_in)
 
                 lineasInternasShapely = loads(geometry_out.ExportToWkt())
                 polygonsShapely = polygonize(lineasInternasShapely)
@@ -289,9 +292,9 @@ class fxcc2Qgis:
                     featuresExternas.append(inFeature)
                 elif nombreCapa == 'PG-LI':
                     featuresInternas.append(inFeature)
-                
+
                 cnt = cnt + 1
-                if cnt < totalRegistros: 
+                if cnt < totalRegistros:
                     inFeature = layerIn.GetNextFeature()
                 else:
                     break
@@ -318,10 +321,14 @@ class fxcc2Qgis:
                         centroides.append([rotulo, coordx, coordy])
                         #print rotulo + "[" + coordx + ", " + coordy + "]"
                 index += 1
-            
+
             #Procesamos el fichero alfanumérico
             asc = dxf.replace(".dxf", ".asc")
-            datos_asc = self.procesaAsc(asc)
+            try:
+                datos_asc = self.procesaAsc(asc)
+            except:
+                print "FXCC " + nombreDxf + "Incompleto"
+                pass
 
             #Almacenamos las features de cada dxf
             dxfs_parcela[nombreDxf] = (featuresExternas, datos_asc)
@@ -347,7 +354,7 @@ class fxcc2Qgis:
         # show the dialog
         self.dlg.show()
         # Run the dialog event loop
-        result = self.dlg.exec_()   
+        result = self.dlg.exec_()
 
         #self.prueba()
         # See if OK was pressed
