@@ -29,6 +29,7 @@ import resources_rc
 # Import the code for the dialog
 from gui.fxcc2qgisdialog import fxcc2QgisDialog
 import os.path
+import re
 
 try:
     from shapely.wkt import dumps, loads
@@ -37,9 +38,9 @@ except:
     print "Este plugin necesita el módulo Shapely para poder funcionar."
 
 try:
-	from osgeo import ogr
+    from osgeo import ogr
 except:
-	import ogr
+    import ogr
 
 
 class fxcc2Qgis:
@@ -235,9 +236,14 @@ class fxcc2Qgis:
 
     def procesaAsc(self, fichero):
 
-        inFile = open(fichero, 'r')
-        lineas = inFile.read().splitlines()
-        inFile.close()
+        try:
+            inFile = open(fichero, 'r')
+            lineas = inFile.read().splitlines()
+            inFile.close()
+        except:
+            print "Error abriendo el fichero ASC"
+            pass
+
         cod_via = lineas[4]
         sg_via = lineas[5]
         nombre_via = lineas[6]
@@ -312,11 +318,17 @@ class fxcc2Qgis:
                     if lineas[index + 2] == 'PG-AA':
                         for l in range(30):
                             linea = lineas[index + l]
-                            if linea == '   1':
+                            p_rot = re.compile('\s*\s1$')
+                            p_cox = re.compile('\s*\s11$')
+                            p_coy = re.compile('\s*\s21$')
+                            #if linea == '   1':
+                            if p_rot.match(linea):
                                 rotulo = lineas[index + l + 1]
-                            if linea == '  11':
+                            #if linea == '  11':
+                            if p_cox.match(linea):
                                 coordx = lineas[index + l + 1]
-                            if linea == '  21':
+                            #if linea == '  21':
+                            if p_coy.match(linea):
                                 coordy = lineas[index + l + 1]
                                 break
                         centroides.append([rotulo, coordx, coordy])
@@ -324,16 +336,18 @@ class fxcc2Qgis:
                 index += 1
 
             #Procesamos el fichero alfanumérico
-            asc = dxf.replace(".dxf", ".asc")
+            asc = dxf.replace(".dxf", ".asc").replace(".DXF", ".ASC")
             try:
                 datos_asc = self.procesaAsc(asc)
+
+                 #Almacenamos las features de cada dxf
+                dxfs_parcela[nombreDxf] = (featuresExternas, datos_asc)
+                dxfs_constru[nombreDxf] = (featuresExternas, featuresInternas, centroides, datos_asc)
             except:
                 print "FXCC " + nombreDxf + "Incompleto"
                 pass
 
-            #Almacenamos las features de cada dxf
-            dxfs_parcela[nombreDxf] = (featuresExternas, datos_asc)
-            dxfs_constru[nombreDxf] = (featuresExternas, featuresInternas, centroides, datos_asc)
+           
 
         #Pasamos todas las features recolectadas a las funciones encargadas de generar las capas
         self.generaCapaConstru(dxfs_constru)
@@ -345,7 +359,8 @@ class fxcc2Qgis:
         matches = []
         for root, dirnames, filenames in os.walk(baseDir):
             for filename in filenames:
-                if os.path.splitext(filename)[1] == '.dxf':
+                if os.path.splitext(filename)[1] == '.dxf'  or \
+                        os.path.splitext(filename)[1] == '.DXF':
                     matches.append(os.path.join(root, filename))
         return matches
 
