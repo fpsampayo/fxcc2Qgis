@@ -23,6 +23,7 @@
 # Import the PyQt and QGIS libraries
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+from qgis._core import QgsVectorLayer
 from qgis.core import *
 # Initialize Qt resources from file resources.py
 import resources_rc
@@ -263,7 +264,7 @@ class fxcc2Qgis:
 
         return [cod_via, sg_via, nombre_via, num, dup, anoExp, numExp, entExp]
 
-        inFile.close()
+
 
 
     def procesaDxf(self, ficheros):
