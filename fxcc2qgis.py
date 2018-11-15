@@ -155,7 +155,7 @@ class fxcc2Qgis:
         pr = ml.dataProvider()
         #Creamos los campos de la capa
         pr.addAttributes( [ QgsField("refcat", QVariant.String) ] )
-        pr.addAttributes( [ QgsField("altura", QVariant.String) ] )
+        pr.addAttributes( [ QgsField("rotulo", QVariant.String) ] )
         pr.addAttributes( [ QgsField("cod_via", QVariant.String) ] )
         pr.addAttributes( [ QgsField("sg_via", QVariant.String) ] )
         pr.addAttributes( [ QgsField("nombre_via", QVariant.String) ] )
@@ -317,6 +317,7 @@ class fxcc2Qgis:
                 line = line
                 if line == 'TEXT':
                     if lineas[index + 2] == 'PG-AA':
+                        rotulo = None
                         for l in range(30):
                             linea = lineas[index + l]
                             p_rot = re.compile('\s*\s1$')
@@ -324,7 +325,8 @@ class fxcc2Qgis:
                             p_coy = re.compile('\s*\s21$')
                             #if linea == '   1':
                             if p_rot.match(linea):
-                                rotulo = lineas[index + l + 1]
+                                if not rotulo:
+                                    rotulo = lineas[index + l + 1]
                             #if linea == '  11':
                             if p_cox.match(linea):
                                 coordx = lineas[index + l + 1]
